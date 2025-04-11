@@ -1,26 +1,27 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Card } from 'antd';
-import ReportSummary from './ReportSummary';
-import ReportChart from './ReportChart';
-import ExportButton from './ExportButton';
+import { fetchReportData } from '@/services/report';
+import ReportSummary from '@/components/ReportSummary';
+import ReportChart from '@/components/ReportChart';
+import ExportButton from '@/components/ExportButton';
 
 const ReportDashboard = () => {
-  const mockData = [
-    { name: 'Nguyễn Văn A', email: 'a@gmail.com', club: 'CLB A' },
-    { name: 'Trần Thị B', email: 'b@gmail.com', club: 'CLB B' },
-    // Thêm dữ liệu mẫu
-  ];
+  const [reportData, setReportData] = useState(null);
+
+  useEffect(() => {
+    fetchReportData().then(setReportData);
+  }, []);
 
   return (
     <div style={{ padding: 20 }}>
       <Card title="Thống kê tổng quan">
-        <ReportSummary />
+        {reportData && <ReportSummary data={reportData} />}
       </Card>
       <Card title="Biểu đồ đơn đăng ký theo câu lạc bộ" style={{ marginTop: 20 }}>
         <ReportChart />
       </Card>
       <Card title="Xuất danh sách thành viên" style={{ marginTop: 20 }}>
-        <ExportButton data={mockData} />
+        <ExportButton />
       </Card>
     </div>
   );

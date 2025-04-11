@@ -1,21 +1,22 @@
 import { Column } from '@ant-design/charts';
+import { getLocalData } from '@/utils/localStorageHelper';
 
-const data = [
-  { club: 'CLB A', status: 'Pending', count: 10 },
-  { club: 'CLB A', status: 'Approved', count: 15 },
-  { club: 'CLB A', status: 'Rejected', count: 5 },
-  { club: 'CLB B', status: 'Pending', count: 7 },
-  { club: 'CLB B', status: 'Approved', count: 20 },
-  { club: 'CLB B', status: 'Rejected', count: 3 },
-];
+const ReportChart = () => {
+  const applications = getLocalData('applications');
+  const clubCounts = getLocalData('clubs').map(club => ({
+    club: club.name,
+    pending: applications.filter(app => app.clubId === club.id && app.status === 'Pending').length,
+    approved: applications.filter(app => app.clubId === club.id && app.status === 'Approved').length,
+    rejected: applications.filter(app => app.clubId === club.id && app.status === 'Rejected').length,
+  }));
 
-const config = {
-  data,
-  isGroup: true,
-  xField: 'club',
-  yField: 'count',
-  seriesField: 'status',
+  const data = clubCounts.flatMap(({ club, pending, approved, rejected }) => [
+    { club, status: 'Pending', count: pending },
+    { club, status: 'Approved', count: approved },
+    { club, status: 'Rejected', count: rejected },
+  ]);
+
+  return <Column data={data} xField="club" yField="count" seriesField="status" isGroup />;
 };
 
-const ReportChart = () => <Column {...config} />;
 export default ReportChart;
